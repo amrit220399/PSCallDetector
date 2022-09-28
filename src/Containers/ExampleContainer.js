@@ -13,10 +13,10 @@ import { useTheme } from '@/Hooks'
 import { useRef } from 'react'
 import { useState } from 'react'
 import CallDetectorManager from 'react-native-call-detection'
-
+var callDetector
 const ExampleContainer = () => {
   const { Gutters, Layout } = useTheme()
-  const callDetector = useRef()
+
   const ds = []
   const [callStates, setCallStates] = useState([])
 
@@ -24,13 +24,14 @@ const ExampleContainer = () => {
 
   const startListenerTapped = () => {
     console.log('Start Listener Called')
-    callDetector.current = new CallDetectorManager(
+    callDetector = new CallDetectorManager(
       (event, number) => {
-        var updatedCallStates = callStates
-        updatedCallStates.push(event + ' - ' + number)
-        var previousDS = dsState
-        setCallStates(updatedCallStates)
-        setDsState(previousDS.cloneWithRows(updatedCallStates))
+        console.log('Listening to Call : ', event, 'Number:-->', number)
+        // var updatedCallStates = callStates
+        // updatedCallStates.push(event + ' - ' + number)
+        // var previousDS = dsState
+        // setCallStates(updatedCallStates)
+        // setDsState(previousDS.cloneWithRows(updatedCallStates))
       },
       true,
       () => {},
@@ -43,13 +44,14 @@ const ExampleContainer = () => {
   }
 
   const callFriendTapped = () => {
-    Linking.openURL('tel:9217721412').catch(err => {
+    Linking.openURL('tel:123456789').catch(err => {
       console.log(err)
     })
   }
 
   const stopListenerTapped = () => {
-    callDetector.current && callDetector.current.dispose()
+    console.log('Stop Listener Called')
+    callDetector && callDetector.dispose()
   }
 
   return (
@@ -58,7 +60,7 @@ const ExampleContainer = () => {
       renderItem={({ item }) => <Text style={styles.callLogs}>{item}</Text>}
       ListHeaderComponent={
         <View style={Layout.fill}>
-          <TouchableOpacity onPress={startListenerTapped}>
+          <TouchableOpacity onPress={() => startListenerTapped()}>
             <Text
               title="Start Listener"
               color="#841584"
@@ -68,22 +70,20 @@ const ExampleContainer = () => {
             </Text>
           </TouchableOpacity>
 
-          <Text
-            onPress={callFriendTapped}
-            title="Call your Friend"
-            style={styles.bottomMargin}
-          >
-            Call your Friend
-          </Text>
-
-          <Text
-            onPress={stopListenerTapped}
-            title="Stop Listener"
-            color="#841584"
-            style={styles.bottomMargin}
-          >
-            Stop Listener
-          </Text>
+          <TouchableOpacity onPress={() => callFriendTapped()}>
+            <Text title="Call your Friend" style={styles.bottomMargin}>
+              Call your Friend
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => stopListenerTapped()}>
+            <Text
+              title="Stop Listener"
+              color="#841584"
+              style={styles.bottomMargin}
+            >
+              Stop Listener
+            </Text>
+          </TouchableOpacity>
 
           <Text style={styles.text}>Call State Logs</Text>
         </View>
