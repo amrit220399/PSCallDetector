@@ -7,12 +7,14 @@ import {
   Text,
   View,
   TouchableOpacity,
+  PermissionsAndroid,
 } from 'react-native'
 
 import { useTheme } from '@/Hooks'
 import { useRef } from 'react'
 import { useState } from 'react'
 import CallDetectorManager from 'react-native-call-detection'
+import { useEffect } from 'react'
 var callDetector
 const ExampleContainer = () => {
   const { Gutters, Layout } = useTheme()
@@ -22,6 +24,21 @@ const ExampleContainer = () => {
 
   const [dsState, setDsState] = useState(ds)
 
+  useEffect(() => {
+    askPermission()
+  }, [])
+
+  const askPermission = async () => {
+    try {
+      const permissions = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.READ_CALL_LOG,
+        PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
+      ])
+      console.log('Permissions are: ', permissions)
+    } catch (err) {
+      console.warn(err)
+    }
+  }
   const startListenerTapped = () => {
     console.log('Start Listener Called')
     callDetector = new CallDetectorManager(
